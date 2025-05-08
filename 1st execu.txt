@@ -1,0 +1,4 @@
+1)First command: 
+hdfs dfsadmin -safemode get
+2) if on 2nd command 
+hdfs dfsadmin -safemode leave
