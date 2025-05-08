@@ -1,0 +1,63 @@
+hive
+
+CREATE DATABASE practical2;
+
+use practical2;
+
+CREATE TABLE flight(fno int, year int, dest varchar(10), delay float);
+
+ALTER TABLE flight rename to air_flight;
+
+ALTER TABLE air_flight ADD COLUMNS(source varchar(10));
+
+drop table flight;
+
+desc air_flight;
+
+CREATE TABLE flight(fno int, year int, dest varchar(10), delay float, flight_date varchar(10))
+         row format delimited
+         fields terminated by ','
+         lines terminated by '\n'
+         stored as textfile;
+
+Create one text file named data.txt in Cloudera Home and paste this :
+
+923,2009,Mumbai,60.0,15/8/2009
+786,2008,Pune,78.0,14/5/2008
+1156,2009,Nagar,0.0,13/3/2009
+112,2008,New Delhi,50.0,14/5/2008
+628,2008,Chennai,46.0,15/9/2008
+
+LOAD DATA local inpath 'data.txt' into table flight;
+
+SELECT * FROM flight;
+
+CREATE EXTERNAL TABLE nflight(fno int, year int, source varchar(10))
+     row format delimited
+     fields terminated by ','
+     lines terminated by '\n'
+     stored as textfile;
+
+select * from nflight;
+
+INSERT INTO nflight values(923,2009,'Pune');
+
+SELECT a.fno, a.year, a.dest, a.delay, b.source
+     from flight a join nflight b
+     on(a.fno = b.fno);
+
+select * from nflight;
+
+select * from flight;
+
+CREATE INDEX flight_index ON table flight(fno)
+     as 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+     WITH DEFERRED REBUILD;
+
+show tables;
+
+SELECT flight_date, AVG(delay) AS avg_departure_delay
+FROM flight
+WHERE year = 2008
+GROUP BY flight_date
+ORDER BY flight_date;
